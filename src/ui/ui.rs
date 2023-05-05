@@ -6,6 +6,7 @@ use crossterm::{
     execute,
     terminal::{disable_raw_mode, LeaveAlternateScreen},
 };
+use notify_rust::Notification;
 use tokio::sync::{mpsc::Receiver, Mutex};
 use tui::{
     backend::Backend,
@@ -125,9 +126,21 @@ impl<B: Backend + std::io::Write> UI<B> {
             if let Ok(msg) = self.ui_state.msg_rx.as_mut().unwrap().try_recv() {
                 match msg.kind {
                     MessageKind::DANMU_MSG => {
+                        // rain start
+                        Notification::new()
+                            .body(&format!("来自 {} 的弹幕: {}", msg.author, msg.content))
+                            .show()
+                            .unwrap();
+                        // rain end
                         self.ui_state.chat_history.push(msg);
                     }
                     MessageKind::SEND_GIFT => {
+                        // rain start
+                        Notification::new()
+                            .body(&format!("来自 {} 的礼物: {}", msg.author, msg.content))
+                            .show()
+                            .unwrap();
+                        // rain end
                         self.ui_state.gift_history.push(msg);
                     }
                     _ => {}
